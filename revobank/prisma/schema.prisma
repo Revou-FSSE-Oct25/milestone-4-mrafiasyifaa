@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id  String  @id @default(uuid())
+  name  String
+  email String  @unique
+  password  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+
+  accounts Account[]
+}
+
+model Account {
+  id  String  @id @default(uuid())
+  userId  String
+  owner User @relation(fields: [userId], references: [id])
+
+  accountNumber String  @unique
+  name  String
+  type  AccountType
+  balance Decimal @default(0) @db.Decimal(19, 4)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  sentTrx Transaction[] @relation("SenderAccount")
+  receivedTrx Transaction[] @relation("ReceiverAccount")
+
+  @@index([userId])
+}
+
+enum AccountType {
+  SAVINGS
+  CHECKING
+  BUSINESS
+  INVESTMENT
+  LOAN
+  //JOINT
+}
+
+model Transaction {
+  id  String  @id @default(uuid())
+  senderAccountId String?
+  senderAccount Account?  @relation("SenderAccount", fields: [senderAccountId], references: [id])
+  
+  receiverAccountId String?
+  receiverAccount Account?  @relation("ReceiverAccount", fields: [receiverAccountId], references: [id])
+
+  amount  Decimal @db.Decimal(19, 4)
+  type  TransactionType
+  description String?
+  createdAt DateTime  @default(now())
+}
+
+enum TransactionType {
+  TRANSFER
+  PURCHASE
+  DEPOSIT
+  WITHDRAWAL
+}

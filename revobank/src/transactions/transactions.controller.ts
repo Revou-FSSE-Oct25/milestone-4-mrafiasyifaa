@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transactions.dto';
@@ -17,8 +17,8 @@ export class TransactionsController {
         return this.transactionService.create(userId, dto)
     }
     
-    @Get(':accountId')
-    findAll(@Req() req: Request, @Param('accountId') accountId: string){
+    @Get()
+    findAll(@Req() req: Request, @Query('accountId') accountId: string){
         const userId = req['user'].sub
         return this.transactionService.findAll(userId, accountId)
     }

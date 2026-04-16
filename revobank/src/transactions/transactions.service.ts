@@ -50,6 +50,7 @@ export class TransactionsService {
         userId: string,
         accountId: string
     ){
+        if(!accountId){throw new BadRequestException('Account ID query params is required!')}
         const account = await this.prisma.db.account.findUnique({
             where:{id: accountId}
         })

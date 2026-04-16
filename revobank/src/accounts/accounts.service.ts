@@ -61,6 +61,22 @@ export class AccountsService {
         return successResponse(account, 'Account retrieved successfully!')
     }
 
+    async update(userId: string, accountId: string, data: Partial<{name: string}>){
+        const account = await this.prisma.db.account.findUnique({
+            where: {id: accountId}
+        })
+
+        if(!account){throw new NotFoundException('Account not found!')}
+        if(account.userId !== userId){throw new ForbiddenException('Access denied!')}
+
+        const updated = await this.prisma.db.account.update({
+            where: {id: accountId},
+            data,
+        })
+
+        return successResponse(updated, 'Account updated successfully!')
+    }
+
     async remove(userId: string, accountId:string){
         const account = await this.prisma.db.account.findUnique({
             where:{

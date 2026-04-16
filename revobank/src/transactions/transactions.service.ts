@@ -70,7 +70,7 @@ export class TransactionsService {
         return successResponse(transaction, 'Transaction found!')
     }
 
-    private async transfer(
+    async transfer(
         userId: string,
         senderAccountId: string | undefined,
         receiverAccountId: string | undefined,
@@ -124,7 +124,7 @@ export class TransactionsService {
         return successResponse(trx, 'Transfer success!')
     }
 
-    private async purchase(
+    async purchase(
         userId: string,
         senderAccountId: string | undefined,
         amount: Prisma.Decimal,
@@ -160,7 +160,7 @@ export class TransactionsService {
         return successResponse(trx, 'Purchase successful!')
     }
 
-    private async deposit(
+    async deposit(
         receiverAccountId: string | undefined,
         amount: Prisma.Decimal, 
         description?: string
@@ -184,7 +184,7 @@ export class TransactionsService {
         return successResponse(trx, 'Deposit successful!');
     }
 
-    private async withdrawal(
+    async withdrawal(
         userId: string,
         senderAccountId: string | undefined,
         amount: Prisma.Decimal,

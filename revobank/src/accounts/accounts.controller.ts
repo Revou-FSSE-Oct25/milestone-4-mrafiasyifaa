@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nes
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/create-account.dto';
+import type { Request } from 'express';
 
 @Controller('accounts')
 @UseGuards(JwtGuard)

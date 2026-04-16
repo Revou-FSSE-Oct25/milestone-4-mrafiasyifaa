@@ -15,7 +15,7 @@ export class AccountsService {
         let exists = true
 
         while(exists){
-            accountNumber = randomInt(1000000000000000, 9999999999999999).toString()
+            accountNumber = randomInt(10000000, 99999999).toString()
             exists = !!(await this.prisma.db.account.findUnique({where: {accountNumber}}))
         }
 

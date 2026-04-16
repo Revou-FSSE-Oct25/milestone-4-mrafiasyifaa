@@ -16,6 +16,7 @@ export class CreateTransactionDto{
     amount: number
 
     @IsEnum(TransactionType)
+    @IsOptional()
     type: TransactionType
 
     @IsString()

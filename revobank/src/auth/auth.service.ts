@@ -14,6 +14,7 @@ export class AuthService {
     ){}
 
     async register(dto: RegisterDto){
+
         const existsUser = await this.prisma.db.user.findUnique({
             where: {email: dto.email},
         })

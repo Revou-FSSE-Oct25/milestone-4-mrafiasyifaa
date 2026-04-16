@@ -46,6 +46,29 @@ export class TransactionsService {
         }
     }
 
+    async findAll(
+        userId: string,
+        accountId: string
+    ){
+        const account = await this.prisma.db.account.findUnique({
+            where:{id: accountId}
+        })
+
+        if(!account){throw new NotFoundException('Account not found!')}
+        if(account.userId !== userId){throw new ForbiddenException('Access denied!')}
+
+        const transaction = await this.prisma.db.transaction.findMany({
+            where:{
+                OR:[{senderAccountId: accountId},
+                    {receiverAccountId: accountId}
+                ]
+            },
+            orderBy: {createdAt: 'desc'}
+        })
+        
+        return successResponse(transaction, 'Transaction found!')
+    }
+
     private async transfer(
         userId: string,
         senderAccountId: string | undefined,

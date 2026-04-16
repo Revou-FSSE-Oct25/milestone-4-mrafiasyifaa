@@ -67,7 +67,27 @@ export class TransactionsService {
             orderBy: {createdAt: 'desc'}
         })
         
-        return successResponse(transaction, 'Transaction found!')
+        return successResponse(transaction, 'Transactions found!')
+    }
+
+    async findOne(userId: string, transactionId: string){
+        const trx = await this.prisma.db.transaction.findUnique({
+            where: {id: transactionId}
+        })
+
+        if(!trx){throw new NotFoundException('Transaction not found!')}
+
+        const relatedAccountIds = [trx.senderAccountId, trx.receiverAccountId].filter(Boolean)
+        const ownedAccount = await this.prisma.db.account.findFirst({
+            where:{
+                id:{in: relatedAccountIds as string[]},
+                userId,
+            }
+        })
+
+        if (!ownedAccount){throw new ForbiddenException('Access denied!')}
+
+        return successResponse(trx, 'Transaction found!')
     }
 
     async transfer(

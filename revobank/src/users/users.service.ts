@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { successResponse } from '../common/response.helper';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -15,10 +16,11 @@ export class UsersService {
             throw new NotFoundException('User not found!')
         }
 
-        return successResponse(user, 'User found successfully!')
+        const { password, ...result } = user
+        return successResponse(result, 'User found successfully!')
     }
 
-    async update(id: string, data: Partial<{ name: string}>){
+    async update(id: string, data: UpdateUserDto){
         await this.findOne(id)
 
         const updated = await this.prisma.db.user.update({
@@ -26,7 +28,8 @@ export class UsersService {
             data,
         })
 
-        return successResponse(updated, 'User updated successfully!')
+        const { password, ...result } = updated
+        return successResponse(result, 'User updated successfully!')
     }
 
 }

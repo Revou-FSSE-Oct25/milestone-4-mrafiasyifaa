@@ -1,18 +1,25 @@
-import { Controller, Get, Param, Patch, Body } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Body, Controller, Get, Patch, Req, UseGuards } from "@nestjs/common";
+import { JwtGuard } from "../auth/guards/jwt.guard";
+import { UsersService } from "./users.service";
+
 
 @Controller('users')
-export class UsersController {
-    constructor(private readonly usersService: UsersService){}
+@UseGuards(JwtGuard)
+export class UsersController{
+    constructor(
+        private readonly usersService: UsersService
+    ){}
 
-    @Get(':id')
-    findOne(@Param('id')id: string){
-        return this.usersService.findOne(id)
+    @Get('profile')
+    findOne(@Req() req: Request){
+        const userId = req['user'].sub
+        return this.usersService.findOne(userId)
     }
 
-    @Patch(':id')
-    update(@Param('id')id: string, @Body() body: Partial<{name: string}>){
-        return this.usersService.update(id, body)
+    @Patch('profile')
+    update(@Req() req: Request, @Body() body: Partial<{name: string}>){
+        const userId = req['user'].sub
+        return this.usersService.update(userId, body)
     }
-    
+
 }

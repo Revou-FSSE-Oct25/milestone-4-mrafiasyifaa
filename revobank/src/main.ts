@@ -12,7 +12,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Revobank API')
-    .setDescription('API Documentation for Milestone 4')
+    .setDescription('RevoBank REST API documentation.\nTo access protected endpoints, click the Authorize button and enter your Bearer token from the login response.')
     .setVersion('1.0')
     .addBearerAuth()
     .build()

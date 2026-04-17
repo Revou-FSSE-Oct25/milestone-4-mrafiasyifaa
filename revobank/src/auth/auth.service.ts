@@ -57,6 +57,7 @@ export class AuthService {
         const token = this.jwt.sign({
             sub: user.id,
             email: user.email,
+            role: user.role,
         })
 
         return successResponse({access_token: token}, 'Login successful!')

@@ -105,7 +105,12 @@ RevoBank is a RESTful banking API built with NestJS and Prisma. It supports user
 4. Run database migration
 
    ```bash
-   npx prisma db push
+   npx prisma migrate dev
+   ```
+
+   For production deployments, use:
+   ```bash
+   npx prisma migrate deploy
    ```
 
 5. Start the development server

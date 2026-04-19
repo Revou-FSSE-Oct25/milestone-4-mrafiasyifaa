@@ -30,6 +30,7 @@ export class TransactionsService {
                     dto.description)
             case TransactionType.DEPOSIT:
                 return this.deposit(
+                    userId,
                     dto.receiverAccountId,
                     amount,
                     dto.description
@@ -181,6 +182,7 @@ export class TransactionsService {
     }
 
     async deposit(
+        userId: string,
         receiverAccountId: string | undefined,
         amount: Prisma.Decimal, 
         description?: string
@@ -189,6 +191,7 @@ export class TransactionsService {
 
         const receiver = await this.prisma.db.account.findUnique({ where: { id: receiverAccountId } });
         if (!receiver) throw new NotFoundException('Receiver account not found!');
+        if (receiver.userId !== userId){throw new ForbiddenException('Access denied!')}
 
         const trx = await this.prisma.db.$transaction(async (tx) => {
             await tx.account.update({

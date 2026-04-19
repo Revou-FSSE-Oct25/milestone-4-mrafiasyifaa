@@ -31,7 +31,7 @@ export class TransactionsController {
     @Post('deposit')
     deposit(@Req() req: Request, @Body() dto: CreateTransactionDto) {
         const userId = req['user'].sub;
-        return this.transactionService.deposit(dto.receiverAccountId, new Prisma.Decimal(dto.amount), dto.description);
+        return this.transactionService.deposit(userId, dto.receiverAccountId, new Prisma.Decimal(dto.amount), dto.description);
     }
 
     @ApiOperation({ summary: 'Withdraw funds from an account' })

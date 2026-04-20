@@ -61,7 +61,7 @@ export class TransactionsService {
         if(!account){throw new NotFoundException('Account not found!')}
         if(account.userId !== userId){throw new ForbiddenException('Access denied!')}
 
-        const [trxs, total] = await this.prisma.db.$transaction([
+        const [transactions, total] = await this.prisma.db.$transaction([
             this.prisma.db.transaction.findMany({
                 where: {OR: [{ senderAccountId: accountId}, {receiverAccountId: accountId}] },
                 orderBy: {createdAt: 'desc'},
@@ -78,7 +78,7 @@ export class TransactionsService {
 
         const totalPage = Math.ceil(total/limit)
 
-        return successResponse({ trxs, total, page, limit, totalPage}, 'Transactions found!')
+        return successResponse({ transactions, total, page, limit, totalPage}, 'Transactions found!')
     }
 
     async findOne(userId: string, transactionId: string){

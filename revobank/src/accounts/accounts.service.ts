@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { randomInt } from 'crypto';
@@ -86,6 +86,10 @@ export class AccountsService {
 
         if(!account){
             throw new NotFoundException('Account not found!')
+        }
+        
+        if(account.balance.gt(0)){
+            throw new BadRequestException('Account has balance!')
         }
 
         if(account.userId !== userId){

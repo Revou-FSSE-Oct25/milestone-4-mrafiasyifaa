@@ -37,17 +37,17 @@ export class AccountsService {
         return successResponse(account, 'Account created successfully!')
     }
 
-    async findAll(userId: string){
+    async findAll(userId: string, isActive: boolean = true){
         const accounts = await this.prisma.db.account.findMany({
-            where:{userId},
+            where:{userId, isActive},
         })
 
         return successResponse(accounts, 'Account found successfully!')
     }
 
-    async findOne(userId: string, accountId: string){
+    async findOne(userId: string, accountId: string, isActive: boolean = true){
         const account = await this.prisma.db.account.findUnique({
-            where: {id: accountId}
+            where: {id: accountId, isActive},
         })
 
         if(!account){
@@ -63,7 +63,7 @@ export class AccountsService {
 
     async update(userId: string, accountId: string, data: Partial<{name: string}>){
         const account = await this.prisma.db.account.findUnique({
-            where: {id: accountId}
+            where: {id: accountId, isActive: true},
         })
 
         if(!account){throw new NotFoundException('Account not found!')}
@@ -92,8 +92,9 @@ export class AccountsService {
             throw new ForbiddenException("Access denied!")
         }
 
-        await this.prisma.db.account.delete({
-            where: {id: accountId}
+        await this.prisma.db.account.update({
+            where: {id: accountId},
+            data: {isActive: false}
         })
 
         return successResponse(null, 'Account deleted successfully!')

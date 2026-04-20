@@ -18,6 +18,7 @@ export class TransactionsController {
     @ApiResponse({ status: 400, schema: { example: { statusCode: 400, message: 'Insufficient balance!', error: 'Bad Request' } } })
     @ApiResponse({ status: 401, schema: { example: { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' } } })
     @ApiResponse({ status: 403, schema: { example: { statusCode: 403, message: 'Access denied!', error: 'Forbidden' } } })
+    
     @Post()
     create(@Req() req: Request, @Body() dto: CreateTransactionDto) {
         const userId = req['user'].sub;
@@ -28,6 +29,7 @@ export class TransactionsController {
     @ApiResponse({ status: 201, schema: { example: { statusCode: 201, message: 'Transaction created successfully!', data: { id: 'uuid', type: 'DEPOSIT', amount: '100000', receiverAccountId: 'uuid', createdAt: '2026-01-01T00:00:00.000Z' } } } })
     @ApiResponse({ status: 400, schema: { example: { statusCode: 400, message: 'Receiver account not found!', error: 'Bad Request' } } })
     @ApiResponse({ status: 401, schema: { example: { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' } } })
+    
     @Post('deposit')
     deposit(@Req() req: Request, @Body() dto: CreateTransactionDto) {
         const userId = req['user'].sub;
@@ -39,6 +41,7 @@ export class TransactionsController {
     @ApiResponse({ status: 400, schema: { example: { statusCode: 400, message: 'Insufficient balance!', error: 'Bad Request' } } })
     @ApiResponse({ status: 401, schema: { example: { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' } } })
     @ApiResponse({ status: 403, schema: { example: { statusCode: 403, message: 'Access denied!', error: 'Forbidden' } } })
+    
     @Post('withdrawal')
     withdrawal(@Req() req: Request, @Body() dto: CreateTransactionDto) {
         const userId = req['user'].sub;
@@ -50,6 +53,7 @@ export class TransactionsController {
     @ApiResponse({ status: 400, schema: { example: { statusCode: 400, message: 'Insufficient balance!', error: 'Bad Request' } } })
     @ApiResponse({ status: 401, schema: { example: { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' } } })
     @ApiResponse({ status: 403, schema: { example: { statusCode: 403, message: 'Access denied!', error: 'Forbidden' } } })
+    
     @Post('transfer')
     transfer(@Req() req: Request, @Body() dto: CreateTransactionDto) {
         const userId = req['user'].sub;
@@ -61,6 +65,7 @@ export class TransactionsController {
     @ApiResponse({ status: 400, schema: { example: { statusCode: 400, message: 'Insufficient balance!', error: 'Bad Request' } } })
     @ApiResponse({ status: 401, schema: { example: { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' } } })
     @ApiResponse({ status: 403, schema: { example: { statusCode: 403, message: 'Access denied!', error: 'Forbidden' } } })
+    
     @Post('purchase')
     purchase(@Req() req: Request, @Body() dto: CreateTransactionDto) {
         const userId = req['user'].sub;
@@ -68,13 +73,22 @@ export class TransactionsController {
     }
 
     @ApiOperation({ summary: 'Get all transactions (optionally filter by accountId)' })
-    @ApiQuery({ name: 'accountId', required: false })
+    @ApiQuery({ name: 'accountId', required: true })
+    @ApiQuery({ name: 'page', required: false, example: 1 })
+    @ApiQuery({ name: 'limit', required: false, example: 10 })
     @ApiResponse({ status: 200, schema: { example: { statusCode: 200, message: 'Transactions found successfully!', data: [{ id: 'uuid', type: 'DEPOSIT', amount: '100000', createdAt: '2026-01-01T00:00:00.000Z' }] } } })
     @ApiResponse({ status: 401, schema: { example: { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' } } })
+    
     @Get()
-    findAll(@Req() req: Request, @Query('accountId') accountId: string) {
+    
+    findAll(
+        @Req() req: Request,
+        @Query('accountId') accountId: string,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10
+    ) {
         const userId = req['user'].sub;
-        return this.transactionService.findAll(userId, accountId);
+        return this.transactionService.findAll(userId, accountId, +page, +limit);
     }
 
     @ApiOperation({ summary: 'Get one transaction by ID' })
@@ -82,7 +96,9 @@ export class TransactionsController {
     @ApiResponse({ status: 401, schema: { example: { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' } } })
     @ApiResponse({ status: 403, schema: { example: { statusCode: 403, message: 'Access denied!', error: 'Forbidden' } } })
     @ApiResponse({ status: 404, schema: { example: { statusCode: 404, message: 'Transaction not found!', error: 'Not Found' } } })
+    
     @Get(':id')
+    
     findOne(@Req() req: Request, @Param('id') transactionId: string) {
         const userId = req['user'].sub;
         return this.transactionService.findOne(userId, transactionId);

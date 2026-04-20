@@ -49,7 +49,9 @@ export class TransactionsService {
 
     async findAll(
         userId: string,
-        accountId: string
+        accountId: string,
+        page: number = 1,
+        limit: number = 10,
     ){
         if(!accountId){throw new BadRequestException('Account ID query params is required!')}
         const account = await this.prisma.db.account.findUnique({
@@ -59,16 +61,24 @@ export class TransactionsService {
         if(!account){throw new NotFoundException('Account not found!')}
         if(account.userId !== userId){throw new ForbiddenException('Access denied!')}
 
-        const transaction = await this.prisma.db.transaction.findMany({
-            where:{
-                OR:[{senderAccountId: accountId},
-                    {receiverAccountId: accountId}
-                ]
-            },
-            orderBy: {createdAt: 'desc'}
+        const [trxs, total] = await this.prisma.db.$transaction([
+            this.prisma.db.transaction.findMany({
+                where: {OR: [{ senderAccountId: accountId}, {receiverAccountId: accountId}] },
+                orderBy: {createdAt: 'desc'},
+                skip: (page-1)*limit,
+                take: limit,
+            }),
+            this.prisma.db.transaction.count({
+                where: {OR: [{ senderAccountId: accountId}, {receiverAccountId: accountId}]},
+            })
+        ])
+        this.prisma.db.transaction.count({
+            where: {OR :[{ senderAccountId: accountId}, {receiverAccountId: accountId}]}
         })
-        
-        return successResponse(transaction, 'Transactions found!')
+
+        const totalPage = Math.ceil(total/limit)
+
+        return successResponse({ trxs, total, page, limit, totalPage}, 'Transactions found!')
     }
 
     async findOne(userId: string, transactionId: string){

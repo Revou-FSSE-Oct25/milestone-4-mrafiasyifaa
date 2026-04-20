@@ -118,6 +118,7 @@ export class TransactionsService {
         })
 
         if(!sender){throw new NotFoundException('Sender account not found!')}
+        if (!sender.isActive) throw new BadRequestException('Sender account is inactive!')
         if(sender.userId !== userId){throw new ForbiddenException('Access denied!')}
         if(new Prisma.Decimal(sender.balance).lt(amount)){throw new BadRequestException('Insufficient balance!')}
         
@@ -128,6 +129,7 @@ export class TransactionsService {
         })
 
         if(!receiver){throw new NotFoundException('Receiver account not found!')}
+        if (!receiver.isActive) throw new BadRequestException('Receiver account is inactive!')
 
         const trx = await this.prisma.db.$transaction(async(tx)=>{
             await tx.account.update({
@@ -169,6 +171,7 @@ export class TransactionsService {
             }
         })
         if(!sender){throw new NotFoundException('Sender account not found!')}
+        if (!sender.isActive) throw new BadRequestException('Account is inactive!')
         if(sender.userId !== userId){throw new ForbiddenException('Access denied!')}
         if(new Prisma.Decimal(sender.balance).lt(amount)){throw new BadRequestException('Insufficient balance!')}
 
@@ -201,6 +204,7 @@ export class TransactionsService {
 
         const receiver = await this.prisma.db.account.findUnique({ where: { id: receiverAccountId } });
         if (!receiver) throw new NotFoundException('Receiver account not found!');
+        if(!receiver.isActive) throw new BadRequestException('Receiver account is not active!')
         if (receiver.userId !== userId){throw new ForbiddenException('Access denied!')}
 
         const trx = await this.prisma.db.$transaction(async (tx) => {
@@ -227,6 +231,7 @@ export class TransactionsService {
         
         const sender = await this.prisma.db.account.findUnique({ where: { id: senderAccountId } });
         if (!sender) throw new NotFoundException('Sender account not found!');
+        if(!sender.isActive) throw new BadRequestException('Sender account is not active!')
         if (sender.userId !== userId) throw new ForbiddenException('Access denied!');
         if (new Prisma.Decimal(sender.balance).lt(amount)) throw new BadRequestException('Insufficient balance!');
 

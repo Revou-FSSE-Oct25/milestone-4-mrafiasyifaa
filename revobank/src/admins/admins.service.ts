@@ -8,20 +8,26 @@ export class AdminsService {
         private readonly prisma: PrismaService
     ){}
 
-    async findAllUsers(){
-        const users = await this.prisma.db.user.findMany({
-            select:{
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                createdAt: true,
-                updatedAt: true,
-                accounts: true,
-            }
-        })
-        return successResponse(users, 'User list found successfully!')
+    async findAllUsers(page: number = 1, limit: number = 10){
+        const [users, total] = await this.prisma.db.$transaction([
+            this.prisma.db.user.findMany({
+                select:{
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    accounts: true,
+                },
+                skip: (page - 1) * limit,
+                take: limit,
+            }),
+            this.prisma.db.user.count(),
+        ])
+        return successResponse({ users, total, page, limit, totalPages: Math.ceil(total / limit) }, 'User list found successfully!')
     }
+
 
     async findOneUser(userId: string){
         const user = await this.prisma.db.user.findUnique({
@@ -40,11 +46,16 @@ export class AdminsService {
         return successResponse(user, 'User found successfully!')
     }
 
-    async findAllTransactions(){
-        const trxs = await this.prisma.db.transaction.findMany({
-            orderBy: {createdAt: 'desc'}
-        })
-        return successResponse(trxs, 'Transaction list found successfully!')
+    async findAllTransactions(page: number = 1, limit: number = 10){
+        const [transactions, total] = await this.prisma.db.$transaction([
+            this.prisma.db.transaction.findMany({
+                orderBy: {createdAt: 'desc'},
+                skip: (page - 1) * limit,
+                take: limit,
+            }),
+        this.prisma.db.transaction.count(),
+    ])
+    return successResponse({ transactions: transactions, total, page, limit, totalPages: Math.ceil(total / limit) }, 'Transaction list found successfully!')
     }
     
     async findOneTransaction(transactionId: string){

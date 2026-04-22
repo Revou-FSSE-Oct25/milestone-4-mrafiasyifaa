@@ -67,7 +67,7 @@ RevoBank is a RESTful banking API built with NestJS and Prisma. It supports user
 | Authentication   | JWT (@nestjs/jwt), bcrypt          |
 | Validation       | class-validator, class-transformer |
 | Documentation    | Swagger (@nestjs/swagger)          |
-| Deployment       | Railway                            |
+| Deployment       | Render                             |
 | Database Hosting | Supabase                           |
 
 ---

@@ -4,9 +4,9 @@
 
 RevoBank is a RESTful banking API built with NestJS and Prisma. It supports user authentication, account management, and financial transactions including deposits, withdrawals, transfers, and purchases. The system enforces ownership checks, role-based access control, and atomic transaction processing to ensure data integrity.
 
-**Live API**: [https://milestone-4-mrafiasyifaa-production.up.railway.app](https://milestone-4-mrafiasyifaa-production.up.railway.app)
+**Live API**: [https://milestone-4-mrafiasyifaa.onrender.com](https://milestone-4-mrafiasyifaa.onrender.com)
 
-**API Documentation (Swagger)**: [https://milestone-4-mrafiasyifaa-production.up.railway.app/docs-v1](https://milestone-4-mrafiasyifaa-production.up.railway.app/docs-v1)
+**API Documentation (Swagger)**: [https://milestone-4-mrafiasyifaa.onrender.com/docs-v1](https://milestone-4-mrafiasyifaa.onrender.com/docs-v1)
 
 ---
 
